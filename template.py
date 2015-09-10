@@ -1,59 +1,53 @@
 ﻿import string
 import dateutil.parser
-class mailTemplate:
 
 
-    def __init__(self, events,template = "eventTemplate.html"):
+class MailTemplate:
+
+    def __init__(self, events, template="eventTemplate.html"):
         self.events = events
         self.template = template
 
+    def new_message(self):
 
-    def newMessage(self):
+        events = self.events
 
-        events= self.events
+        template = open('eventTemplate.html', "r", encoding="utf-8").read()
 
-        template = open('eventTemplate.html',"r",encoding="utf-8").read()
-
-        eventList = []
+        event_list = []
         if not events:
-            print ('No upcoming events found.')
+            print('No upcoming events found.')
         for event in events:
-            eventDict = dict()
+            event_dict = dict()
 
-            eventDict['start'] = event['start'].get('dateTime', event['start'].get('date'))
-            eventDict['start'] = dateutil.parser.parse(eventDict['start']).strftime("%d %b %Y %H:%M:%S")
+            event_dict['start'] = event['start'].get('dateTime', event['start'].get('date'))
+            event_dict['start'] = dateutil.parser.parse(event_dict['start']).strftime("%d %b %Y %H:%M:%S")
 
-            eventDict['end'] = event['end'].get('dateTime', event['end'].get('date'))
-            eventDict['end'] =  dateutil.parser.parse(eventDict['end']).strftime("%d %b %Y %H:%M:%S")
-
-            try:
-                eventDict['description'] = event['description']
-            except KeyError:
-                eventDict['description']="Puudu"
+            event_dict['end'] = event['end'].get('dateTime', event['end'].get('date'))
+            event_dict['end'] = dateutil.parser.parse(event_dict['end']).strftime("%d %b %Y %H:%M:%S")
 
             try:
-                eventDict['summary'] = event['summary']
+                event_dict['description'] = event['description']
             except KeyError:
-                eventDict['summary']="Puudu"
+                event_dict['description'] = "Puudu"
 
             try:
-                eventDict['location'] = event['location']
+                event_dict['summary'] = event['summary']
             except KeyError:
-                eventDict['location']="Teadmata"
-            eventList.append(eventDict)
+                event_dict['summary'] = "Puudu"
+
+            try:
+                event_dict['location'] = event['location']
+            except KeyError:
+                event_dict['location'] = "Teadmata"
+            event_list.append(event_dict)
 
         tpl = string.Template(template)
 
-
         events2mail = []
 
-        for event in eventList:
+        for event in event_list:
             events2mail.append(tpl.substitute(event))
 
-        eventsMerged = ''.join(events2mail)
-        return eventsMerged
-
-
-
-        #for event in events2mail:
-        #    print (event)
+        events_merged = ''.join(events2mail)
+        return events_merged
